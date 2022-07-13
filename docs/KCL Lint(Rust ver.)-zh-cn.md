@@ -5,10 +5,10 @@
 ## 2 设计方案
 ### 2.1 与py版本的差异
 KCL lint 的 python 版本参照了 pylint 的设计，是独立于编译器的工具。Lint 工具有独立的命令行解析，主函数中调用 KCLVM 的 parse 函数获取 AST，然后在 Lint 的系统中对 AST 进行检查、输出。因此， KCL Lint 的 python 版本需要自行处理例如参数解析，跟路径处理，文件遍历等问题。实际上，这些工作在 KCLVM 中已经处理过一次了。同时 Lint 工具还单独维护了错误信息和错误输出模块，与 KCLVM 主体有一些割裂，维护起来也需要成本。而且，对于一些 Warning 级别的信息，编译过程中并不会给用户提示，而是需要单独运行 lint 指令才能看到。
-![](../pic/KCL_Lint_tool(Rustver.)/kcllint_py.jpg)
+![](../images/KCL_Lint_tool(Rustver.)/kcllint_py.jpg)
 
 KCL Lint rust 版本参考 Rustc 的 Resolver 和 Lint 的设计，把 Lint 工具做到编译的语义检查阶段，与VM 的其他部分共用一套错误处理系统， Lint 检查生成 diagnostics 并插入到`handler.diagnostics`中， 由 VM 统一处理。避免了额外维护一套错误信息，同时也将 Lint 检查出来的问题在编译时抛出，不需要额外执行 lint 检查。如果需要单独进行 lint 检查，则在 lint 检查后抛出 diagnostics 并退出程序。
-![](../pic/KCL_Lint_tool(Rustver.)/kcllint_rust.jpg)
+![](../images/KCL_Lint_tool(Rustver.)/kcllint_rust.jpg)
 
 在执行检查方法，python 版本将 Lint 的检查按功能和种类分为多个 checker，例如 ImportChecker，BaseChecker等。每一个 checker 需要遍历一次 AST。rust 版本不再分为多个checker，而是在一个CombinedLintPass 结构中按照 AST 的种类汇总所有 lint 的检查。在遍历 AST 节点时，调用 CombinedLintPass 的 check 方法，即可在一次遍历中完成所有 lint 的检查。
 ### 2.2 总体设计

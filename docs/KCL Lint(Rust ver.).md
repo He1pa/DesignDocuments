@@ -9,11 +9,11 @@
 
 The python version of KCL Lint follows the design of pylint and is a compiler-independent tool. The Lint has indepent command line parsing. In main fuction, Linter calls the `parse_program()` function to obtain the AST, and then checks the AST, generates Lint messages and output them. Therefore, the python version of KCL Lint needs to deal with many problems by itself, such as parameter parsing, path processing, file traversal, etc. In fact, these work has already been handled once in KCLVM. At the same time, the Lint tool also maintains another error messages and error output system, which is somewhat separated from the main body of KCLVM, and also required cost to maintain. Moreover, for some Warning level information, the user will not be prompted during the compilation process. They need to run the lint command separately to see it.
 
-![](../pic/KCL_Lint_tool(Rustver.)/kcllint_py.jpg)
+![](../images/KCL_Lint_tool(Rustver.)/kcllint_py.jpg)
 
 The KCL Lint rust version is based on the design of Rustc's Resolver and Lint, and executes lint checking during the semantic phase of compilation. Lint shares a common error handling system with the rest of the KCLVM. Lint tool checks AST, generates diagnostics and inserts them into `handler.diagnostics`, which are handled by the KCLVM. This avoids the need to maintain an additional set of error messages, and also throws the Lint-checked problems at compile time without the need to perform additional lint checks. If a separate lint check is required, the diagnostics are thrown after the lint check and the program exits. This avoids maintaining an additional set of error messages, and also emit the problems detected by Lint at compile time. If only lint checking is required, KCLVM will emit diagnostics after lint checking and exits the main program.
 
-![](../pic/KCL_Lint_tool(Rustver.)/kcllint_rust.jpg)
+![](../images/KCL_Lint_tool(Rustver.)/kcllint_rust.jpg)
 
 When checking, the python ver. Lint divides different checks into multiple checkers by AST type, such as `ImportCheck`, `BaseChecker` etc. Each checker needs to traverse AST at least once. The Rust version is no longer divided into multiple checkers, but collects all lint checks by AST type in a `CombinedLintPass` structure. When traversing the AST node, Lint calls the check method of `CombinedLintPass`, which run all lint checks in one traversal.
 
