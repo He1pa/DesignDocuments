@@ -68,7 +68,7 @@ pub struct LintPassB{
 impl LintPass for LintPassA{
     fn name(){..}
     fn get_lint(){...}
-    fn check_ident(&mut self, a: ast::Ident, &mut diags: IndexSet<diagnostics>){
+    fn check_ident(&mut self, a: ast::Ident, diags: &mut IndexSet<diagnostics>){
         ...
     }
 }
@@ -77,7 +77,7 @@ impl LintPass for LintPassA{
 impl LintPass for LintPassB{
     fn name(){..}
     fn get_lint(){...}
-    fn check_stmt(&mut self, a: ast::Stmt, &mut diags: IndexSet<diagnostics>){
+    fn check_stmt(&mut self, a: ast::Stmt, diags: &mut IndexSet<diagnostics>){
         ...
     }
 }
@@ -106,12 +106,12 @@ impl CombinedLintPass{
 }
 
 impl LintPass for CombinedLintPass {
-    fn check_ident(&mut self, a: Ident, &mut diags: IndexSet<diagnostics>){
+    fn check_ident(&mut self, a: Ident, diags: &mut IndexSet<diagnostics>){
         self.LintPassA.check_ident(a, diags);
         self.LintPassB.check_ident(a, diags);
         ...
     }
-    fn check_stmt(&mut self, a: &ast::Stmt, &mut diags: IndexSet<diagnostics>){
+    fn check_stmt(&mut self, a: &ast::Stmt, diags: &mut IndexSet<diagnostics>){
         self.LintPassA.check_stmt(a, diags);
         self.LintPassB.check_stmt(a, diags);
         ...
@@ -137,11 +137,11 @@ impl Checker{
 }
 
 impl ast_walker::Walker for Linter{
-    fn walk_ident(&self, a: ast::Ident, &mut diags: IndexSet<diagnostics>){
+    fn walk_ident(&self, a: ast::Ident, diags: &mut IndexSet<diagnostics>){
         pass.check_ident(a, diags);
         walk_subAST();
     }
-    fn walk_stmt(&self, a: ast::Ident, &mut diags: IndexSet<diagnostics>){
+    fn walk_stmt(&self, a: ast::Ident, diags: &mut IndexSet<diagnostics>){
         pass.check_stmt(a, diags);
         walk_subAST();
     }
@@ -228,13 +228,13 @@ impl BuiltinCombinedEarlyLintPass{
 
 impl EarlyLintPass for BuiltinCombinedEarlyLintPass {
     fn check_ident(&mut self, context: &EarlyContext<'_>, a: Ident){
-        self.UnusedParens.check_ident (context, a: Ident);
-        self.UnusedBraces.check_ident (context, a: Ident);
+        self.UnusedParens.check_ident(context, a: Ident);
+        self.UnusedBraces.check_ident(context, a: Ident);
         ...
     }
     fn check_crats(&mut self, context: &EarlyContext<'_>, a: &ast::Crate){
-        self.UnusedParens.check_crats (context, a: Crate);
-        self.UnusedBraces.check_crats (context, a: Crate);
+        self.UnusedParens.check_crats(context, a: Crate);
+        self.UnusedBraces.check_crats(context, a: Crate);
         ...
     }
 }
