@@ -13,6 +13,7 @@ KCL Lint rust 版本参考 Rustc 的 Resolver 和 Lint 的设计，把 Lint 工�
 在执行检查方法，python 版本将 Lint 的检查按功能和种类分为多个 checker，例如 ImportChecker，BaseChecker等。每一个 checker 需要遍历一次 AST。rust 版本不再分为多个checker，而是在一个CombinedLintPass 结构中按照 AST 的种类汇总所有 lint 的检查。在遍历 AST 节点时，调用 CombinedLintPass 的 check 方法，即可在一次遍历中完成所有 lint 的检查。
 ### 2.2 总体设计
 Lint 在语义分析阶段执行，主要结构包含 Lint， LintPass， CombinedLintPass 和 主体 Linter，由 Linter 实现 walker 中遍历 AST 的方法。在遍历每一个 AST 节点时，调用 CombinedLintPass 中对应的 check 方法。Lint 和 LintPass 中分别有每个 lint 的静态信息和检查方法。CombinedLintPass 按照 AST 节点的种类汇总了这些 LintPass 中的检查。
+![](../images/KCL_Lint_tool(Rustver.)/KCL_Lint.jpg)
 ### 2.3 具体设计
 #### 2.3.1 Lint
 `Lint` 是定义 Lint 的 struct 类型，是 lint 的全局标识和对 lint 的描述，包含该 lint 的一些 stastic 信息(名称、等级、错误信息，错误代码，例子等）。

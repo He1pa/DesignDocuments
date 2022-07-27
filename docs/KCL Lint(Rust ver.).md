@@ -19,6 +19,7 @@ When checking, the python ver. Lint divides different checks into multiple check
 
 ### 2.2 Overall
 Lint is executed during the semantic analysis phase, and the main structure consists of `Lint`, `LintPass`, `CombinedLintPass` and `Linter`, which implements the `walker` methods for traversing AST. When traversing AST node, the corresponding check method in `CombinedLintPass` is called. Static information and check methods for each lint are defined in `Lint` and `LintPass` respectively. `CombinedLintPass` aggregates the checks in these LintPasses according to the type of AST node.
+![](../images/KCL_Lint_tool(Rustver.)/KCL_Lint.jpg)
 
 ### 2.3 Specific design
 #### 2.3.1 Lint
